@@ -6,7 +6,7 @@ This project was built to practice modern React concepts such as routing, compon
 
 ---
 
-## 📖 About The Project
+## About The Project
 
 DevPulse allows users to:
 
@@ -20,7 +20,7 @@ The project focuses on learning React fundamentals while building a practical ap
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - React
 - Vite
@@ -32,7 +32,7 @@ The project focuses on learning React fundamentals while building a practical ap
 
 ---
 
-## ✨ Features
+## Features
 
 ### Dashboard
 
