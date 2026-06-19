@@ -1,7 +1,7 @@
 // src/pages/Profile.jsx
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom"; // Added Link
-import { FiArrowRight } from "react-icons/fi"; // Visual icon
+import { useParams, Link } from "react-router-dom";
+import { FiArrowRight, FiHeart } from "react-icons/fi"; // Injected FiHeart icon
 
 import { getGithubUser } from "../services/githubApi";
 import ProfileCard from "../components/profile/ProfileCard";
@@ -13,14 +13,21 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isFavorited, setIsFavorited] = useState(false); // Tracks if user is saved
 
   useEffect(() => {
     async function fetchUser() {
       try {
         setLoading(true);
         const data = await getGithubUser(username);
-        setUser(data); // receives github db engine json object packet
+        setUser(data);
         setError("");
+
+        // Check if this specific developer is ALREADY saved in localStorage
+        const savedFavorites = JSON.parse(localStorage.getItem("devPulse_favorites")) || [];
+        const exists = savedFavorites.some((fav) => fav.login.toLowerCase() === username.toLowerCase());
+        setIsFavorited(exists);
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -31,45 +38,60 @@ function Profile() {
     fetchUser();
   }, [username]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center font-mono">
-        <div className="space-y-3 text-center">
-          <div className="mx-auto h-6 w-6 border-2 border-t-transparent border-violet-500 rounded-full animate-spin" />
-          <p className="text-xs text-slate-500 uppercase tracking-widest">Loading core files...</p>
-        </div>
-      </div>
-    );
-  }
+  // THE TOGGLE FAVORITES FUNCTION
+  const handleToggleFavorite = () => {
+    // 1. Get current saved array from storage (or start empty array if none)
+    const savedFavorites = JSON.parse(localStorage.getItem("devPulse_favorites")) || [];
 
-  if (error) {
-    return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-center max-w-md mx-auto font-mono mt-12">
-        <p className="text-red-400 text-sm font-bold uppercase tracking-wider mb-2">Registry Look-up Failed</p>
-        <p className="text-xs text-slate-400">{error}</p>
-        <div className="mt-4 pt-4 border-t border-red-500/10">
-          <Link to="/" className="text-xs text-cyan-400 hover:underline">⭠ Return to Mainframe Base</Link>
-        </div>
-      </div>
-    );
-  }
+    if (isFavorited) {
+      // REMOVE: Filter them out of the list
+      const updatedFavorites = savedFavorites.filter((fav) => fav.login !== user.login);
+      localStorage.setItem("devPulse_favorites", JSON.stringify(updatedFavorites));
+      setIsFavorited(false);
+    } else {
+      // ADD: Push a clean mini-profile packet into the array list
+      const miniProfile = {
+        login: user.login,
+        name: user.name,
+        avatar_url: user.avatar_url,
+        public_repos: user.public_repos
+      };
+      const updatedFavorites = [...savedFavorites, miniProfile];
+      localStorage.setItem("devPulse_favorites", JSON.stringify(updatedFavorites));
+      setIsFavorited(true);
+    }
+  };
+
+  if (loading) return <div className="flex flex-1 items-center justify-center font-mono text-xs text-slate-500">Loading profile...</div>;
+  if (error) return <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-red-400 font-mono text-center max-w-md mx-auto mt-12">{error}</div>;
+  if (!user) return null;
 
   return (
     <div className="space-y-6 w-full max-w-3xl mx-auto py-4">
-      {/* Injected State Package Variable -> Sent Downward as a Prop */}
-      <ProfileCard user={user} />
+      
+      {/* INTERACTIVE SAVE TOOL BAR BOX */}
+      <div className="flex justify-between items-center bg-slate-900/40 border border-slate-800 p-4 rounded-xl font-mono text-xs">
+        <span className="text-slate-400">INDEX_TARGET // @{user.login}</span>
+        
+        <button
+          onClick={handleToggleFavorite}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold border transition-all cursor-pointer ${
+            isFavorited 
+              ? "bg-rose-500/10 border-rose-500/30 text-rose-400" 
+              : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+          }`}
+        >
+          <FiHeart className={isFavorited ? "fill-rose-400" : ""} />
+          {isFavorited ? "REMOVE INTEL" : "SAVE PROFILE"}
+        </button>
+      </div>
 
-      {/* Injected State Package Variable -> Sent Downward as a Prop */}
+      <ProfileCard user={user} />
       <ProfileStats user={user} />
 
-      {/* ENHANCEMENT LINK: Navigates straight to the dynamic repository view */}
       <div className="pt-2 flex justify-end">
-        <Link
-          to={`/repositories/${user.login}`}
-          className="flex items-center gap-2 font-mono text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white px-5 py-3 rounded-xl transition-all shadow-lg shadow-violet-600/10 hover:shadow-violet-600/20"
-        >
-          EXPLORE CODEBASE REPOSITORIES
-          <FiArrowRight size={14} />
+        <Link to={`/repositories/${user.login}`} className="flex items-center gap-2 font-mono text-xs font-semibold bg-violet-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-violet-600/10">
+          EXPLORE CODEBASE REPOSITORIES <FiArrowRight size={14} />
         </Link>
       </div>
     </div>
