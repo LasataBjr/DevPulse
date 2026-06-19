@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import SearchBar from "../components/common/SearchBar";
+import SearchBar from "../components/common/Searchbar";
 import { FiCpu } from "react-icons/fi";
 
 export default function Home() {
