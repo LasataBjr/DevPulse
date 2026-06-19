@@ -12,9 +12,9 @@ export async function getGithubUser(username) {
   return response.json(); // Returns the parsed user object data
 }
 
-//  Fetch public codebase vaults (We'll use this next!)
+// Fetches public codebases (sorted by most recently updated, limiting to 100 items)
 export async function getGithubRepos(username) {
-  const response = await fetch(`${BASE_URL}/users/${username}/repos?sort=updated&per_page=6`);
+  const response = await fetch(`${BASE_URL}/users/${username}/repos?sort=updated&per_page=100`);
 
   if (!response.ok) {
     throw new Error("Could not retrieve repository streams.");
