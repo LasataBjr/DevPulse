@@ -89,10 +89,17 @@ function Profile() {
       <ProfileCard user={user} />
       <ProfileStats user={user} />
 
-      <div className="pt-2 flex justify-end">
-        <Link to={`/repositories/${user.login}`} className="flex items-center gap-2 font-mono text-xs font-semibold bg-violet-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-violet-600/10">
-          EXPLORE CODEBASE REPOSITORIES <FiArrowRight size={14} />
-        </Link>
+        <div className="pt-4 flex flex-col sm:flex-row justify-end gap-3 font-mono">
+              
+            <Link to={`/repositories/${user.login}`} className="flex items-center gap-2 font-mono text-xs font-semibold bg-violet-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-violet-600/10">
+                EXPLORE CODEBASE REPOSITORIES <FiArrowRight size={14} />
+            </Link>
+              
+            <Link to={`/analytics/${user.login}`} className="flex items-center justify-center gap-2 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white px-5 py-3 rounded-xl 
+                transition-all shadow-lg shadow-violet-600/10 hover:shadow-violet-600/20">
+                ENGAGE DEEP ANALYTICS <FiArrowRight size={14} />
+            </Link>
+
       </div>
     </div>
   );

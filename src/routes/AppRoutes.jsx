@@ -7,6 +7,7 @@ import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import Repositories from "../pages/Repositories";
 import Favorites from "../pages/Favorites";
+import Analytics from "../pages/Analytics";
 
 export default function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ export default function AppRoutes() {
         {/* Dynamic Variable Parameter Routes (:username token placeholders) */}
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/repositories/:username" element={<Repositories />} />
+        <Route path="/analytics/:username" element={<Analytics />} />
         
         {/* Guard Rail Fallback: Redirect anything else straight back home */}
         <Route path="*" element={<Navigate to="/" replace />} />
